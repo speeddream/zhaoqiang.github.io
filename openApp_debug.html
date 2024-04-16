@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title data-n-head="true">学科网</title>
+    <!-- ... 其他的 meta 和 link 标签 ... -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <script>
+    // 假设的设备和微信检测变量，你需要根据实际情况来设置这些值
+    var device = 'ios'; // 或者 'android'
+    var isWeixin = false; // 根据实际情况检测是否在微信中
+    var iosOpenAppUrl = 'https://myx.xkw.com/app/home?targetType=100003&params=%7B%2522courseId%2522:%25221258115604767485952%2522,%2522periodId%2522:%25221258115611012804608%2522,%2522status%2522:5,%2522videoPosition%2522:0%7D';
+    var iosSchemeOpenAppUrl = '你的iOS自定义Scheme链接';
+    var androidOpenAppUrl = '你的Android通用链接';
+
+    function clickOpenApp(event) {
+      let appOpened = false;
+      const universalLink = device === 'ios' ? iosOpenAppUrl : androidOpenAppUrl;
+      const schemeLink = device === 'ios' ? iosSchemeOpenAppUrl : 'about:blank'; // Android不需要自定义Scheme
+      const fallbackLink = 'https://m.zxxk.com/zxxk/openApp?isNotLaunchStore';
+
+      // 监听页面可见性变化事件作为应用打开的证据
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'hidden') {
+          appOpened = true;
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange, false);
+
+      // 尝试使用通用链接打开应用
+      window.location.href = universalLink;
+
+      // 如果通用链接失败，尝试使用自定义Scheme
+      setTimeout(() => {
+        if (!appOpened && !isWeixin) {
+          window.location.href = schemeLink;
+        }
+      }, 500);
+
+      // 如果应用未打开，则跳转到下载页面
+      setTimeout(() => {
+        if (!appOpened) {
+          window.location.href = fallbackLink;
+        }
+        // 清理事件监听器
+        document.removeEventListener('visibilitychange', handleVisibilityChange, false);
+      }, 2000); // 增加延时时间，给用户更多响应时间
+
+      event.preventDefault();
+    }
+    </script>
+</head>
+
+<body data-n-head="">
+    <!-- ... 你的其他HTML内容 ... -->
+    <div class="download-app-btn" onclick="clickOpenApp(event)">下载APP</div>
+    <!-- ... 你的其他HTML内容 ... -->
+</body>
+
+</html>
